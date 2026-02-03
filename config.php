@@ -35,12 +35,6 @@ return [
         "value" => "", 
         "tip" => ""
     ], 
-    "callback_domain" => [
-        "title" => "回调域名", 
-        "type" => "text", 
-        "value" => "", 
-        "tip" => "用于接收认证结果的回调域名"
-    ],
     "qq_number" => [
         "title" => "请输入Coke的QQ号", 
         "type" => "text", 

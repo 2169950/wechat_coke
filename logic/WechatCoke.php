@@ -35,11 +35,8 @@ class WechatCoke
             return ["status" => 400, "msg" => "授权验证失败，请联系管理员"];
         }
         
-        // 检查回调域名是否为空
-        $callbackDomain = trim($this->_config['callback_domain'] ?? '');
-        if (empty($callbackDomain)) {
-            return ["status" => 400, "msg" => "插件信息配置不全，请配置回调域名"];
-        }
+        // 自动获取当前域名作为回调域名
+        $callbackDomain = $this->getCurrentDomain();
         
         $redirectUrl = $callbackDomain . "/verified?action=personal&step=authstart&type=WechatCoke";
         
@@ -51,6 +48,17 @@ class WechatCoke
             return ["status" => 200, "data" => $result];
         }else{
             return ["status" => 400, "msg" => $result['Error']['Message'] ?? '未知错误'];
+        }
+        
+        /**
+         * 获取当前域名
+         * @return string 当前域名
+         */
+        private function getCurrentDomain()
+        {
+            $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https://' : 'http://';
+            $domain = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'];
+            return $protocol . $domain;
         }
     }
     
@@ -90,7 +98,7 @@ class WechatCoke
                         'InvalidParameterValue.RuleIdNotExist',
                         'InvalidParameterValue.RuleIdDisabled',
                         'UnauthorizedOperation.Nonactivated',
-                        'UnauthorizedOperation.ActivateError'
+                        'UnauthorizedOperation.RegionNotSupported'
                     ])) {
                         $msg = $result["Error"]["Message"];
                         break; // 不可恢复的错误，直接退出
